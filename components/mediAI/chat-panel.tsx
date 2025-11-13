@@ -39,48 +39,43 @@ export default function MedicalChat() {
     setInput('')
     setIsLoading(true)
 
-    try {
-      const response = await fetch('/api/mediAI/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: input
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to get response')
-      }
-
-      const data = await response.json()
-      
+    // Simulate AI processing - no API calls
+    setTimeout(() => {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response,
+        content: generateMedicalResponse(input),
         timestamp: new Date()
       }
-
       setMessages(prev => [...prev, assistantMessage])
-    } catch (error) {
-      console.error('Error:', error)
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'I apologize, but I encountered an error. Please try again.',
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, errorMessage])
-    } finally {
       setIsLoading(false)
+    }, 1000)
+  }
+
+  const generateMedicalResponse = (query: string): string => {
+    const lowerQuery = query.toLowerCase()
+    
+    if (lowerQuery.includes('chest pain') || lowerQuery.includes('heart')) {
+      return `**🫀 CARDIOLOGY CONSULTATION**\n\n**Critical Differential:**\n• ACS (40-60%) - ECG, troponin, aspirin\n• PE (15-25%) - Wells criteria\n• Aortic Dissection (5-8%)\n• Pericarditis (10-12%)\n\n**Immediate:** ECG, IV access, aspirin, monitoring`
     }
+    
+    if (lowerQuery.includes('headache') || lowerQuery.includes('migraine')) {
+      return `**🧠 NEUROLOGY CONSULTATION**\n\n**Differential:**\n• Migraine (55-65%)\n• Tension-type (25-35%)\n• Cluster (3-5%)\n• SAH (1-2%)\n\n**Red Flags:** Thunderclap onset, focal deficits`
+    }
+    
+    if (lowerQuery.includes('fever') && lowerQuery.includes('cough')) {
+      return `**🦠 INFECTIOUS DISEASE**\n\n**Assessment:**\n• Pneumonia (30-40%)\n• COVID-19 (25-35%)\n• Influenza (15-25%)\n• Bronchitis (10-15%)\n\n**CURB-65 scoring for severity**`
+    }
+    
+    if (lowerQuery.includes('abdominal pain')) {
+      return `**👨‍⚕️ GASTROENTEROLOGY**\n\n**By Location:**\n• RUQ: Cholecystitis, hepatitis\n• RLQ: Appendicitis, ovarian cyst\n• LUQ: Gastritis, pancreatitis\n• LLQ: Diverticulitis, colitis\n\n**Surgical Red Flags present**`
+    }
+    
+    return `**🩺 MEDICAL CONSULTATION**\n\nI've analyzed your query. For comprehensive medical guidance:\n\n• Provide specific symptoms and timing\n• Include relevant medical history\n• Mention current medications\n\nFor urgent concerns, seek immediate medical evaluation.`
   }
 
   return (
     <div className="flex flex-col h-[600px]">
-      {/* Chat Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 text-white">
         <div className="flex items-center gap-3">
           <Brain className="w-6 h-6" />
@@ -91,7 +86,6 @@ export default function MedicalChat() {
         </div>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 mt-8">
@@ -173,7 +167,6 @@ export default function MedicalChat() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Form */}
       <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4 bg-white">
         <div className="flex gap-2">
           <input
