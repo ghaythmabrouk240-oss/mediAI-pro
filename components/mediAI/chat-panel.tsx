@@ -40,14 +40,13 @@ export default function MedicalChat() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/mediAI/ollama', {
+      const response = await fetch('/api/mediAI/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: input,
-          conversationHistory: messages
+          message: input
         }),
       })
 
@@ -70,7 +69,7 @@ export default function MedicalChat() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I apologize, but I encountered an error. Please try again or check if the Ollama service is running.',
+        content: 'I apologize, but I encountered an error. Please try again.',
         timestamp: new Date()
       }
       setMessages(prev => [...prev, errorMessage])
